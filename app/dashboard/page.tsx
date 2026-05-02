@@ -10,15 +10,21 @@ import {
 export default function Dashboard() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const res = await fetch('/api/requests');
         const json = await res.json();
-        setData(json);
-      } catch (error) {
+        if (Array.isArray(json)) {
+          setData(json);
+        } else {
+          throw new Error(json.error || 'API returned invalid data format');
+        }
+      } catch (error: any) {
         console.error('Failed to fetch data', error);
+        setError(error.message || '获取数据失败，请重试');
       } finally {
         setLoading(false);
       }
@@ -67,6 +73,16 @@ export default function Dashboard() {
     return (
       <div className="app-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <h2 className="title">正在加载数据...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="app-container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <h2 className="title" style={{ color: 'var(--error-color)' }}>哎呀，出错了</h2>
+        <p className="subtitle">{error}</p>
+        <Link href="/" className="btn btn-primary">返回首页</Link>
       </div>
     );
   }
