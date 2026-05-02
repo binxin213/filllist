@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model RepairRequest {
+  id              Int      @id @default(autoincrement())
+  applicant       String
+  serialNumber    String
+  location        String
+  applicationTime DateTime
+  projectName     String
+  description     String
+  expectedReturn  DateTime
+  createdAt       DateTime @default(now())
+}
